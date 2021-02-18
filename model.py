@@ -34,3 +34,6 @@ class LeastSquaresModel(Model):
     return self.yint
   def get_sum_of_sqauared_residuals(self):
     pass
+
+class LogisticModel(Model):
+  pass

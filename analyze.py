@@ -32,8 +32,26 @@ class Analyzer(object):
   def analyze_data(self, data):
     # Use this area as a collective "set" or "generate"
     # This should only be for storing the stats
-
     pass
+
+# TP -- true pos, TN -- true neg, FP -- false pos, FN -- false neg
+# Likes cocacola growing up?
+# You will become an achoholic
+# specificity = TP / (TP + FP)
+# sensitivity = TN / (TN + FN)
+
+'''
+
+specificity
+|
+|
+|
+|
+|
+-------------------
+(1-sensitivity)
+
+'''
   
 class Dataset(object):
   def __init__(self):
@@ -41,3 +59,25 @@ class Dataset(object):
   def class_name(self):
     return "Dataset"
   
+'''
+
+[(x1,y1),(x2,y2),(x3,y3)...]
+y=ax+bz+c
+[(x1,z1,y1),(x2,z2,y2)...]
+[(x1,x2,x3...), (y1,y2,y3...), (z1,z2,z3...)]
+
+'''
+
+(weight_mouse, age, height, length, parents, location, diet, bodymassindex)
+
+#<!-----Task Board-----!>#
+
+# Russell --> SQL
+# Kai     --> Dataset
+# Harry   --> Analyzer
+# Ben     --> Models
+
+# Tasks:
+# Dataset hooked up w visualize. 
+# Analyzer
+# Models

@@ -39,3 +39,6 @@ class SQLConnection(object):
       self.queue(select_code)
     self.debug.prn(self, 'Data fetched.')
     return self.crsr.fetchall()
+  #TODO - Have an SQL SELECT statement and plot the results
+  def plot_queue(self):
+    pass
