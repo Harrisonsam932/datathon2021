@@ -1,6 +1,10 @@
 import sqlite3 as sql
 from utils import Debugger
 
+class SQLManager(object): # Russell, you can put your sql methods here
+  def __init__(self):
+    pass
+
 class SQLConnection(object):
   def __init__(self, addr):
     self.addr = addr
@@ -39,6 +43,3 @@ class SQLConnection(object):
       self.queue(select_code)
     self.debug.prn(self, 'Data fetched.')
     return self.crsr.fetchall()
-  #TODO - Have an SQL SELECT statement and plot the results
-  def plot_queue(self):
-    pass
