@@ -1,7 +1,10 @@
 from utils import ImageManager
 from utils import Randomizer
+from utils import Debugger
+from utils import OutputFileFormatter
 
 from guis import GUI
+from guis import Console
 
 from model import Modeller
 from model import LinearModel
@@ -10,56 +13,60 @@ from analyze import Analyzer
 
 from visualize import Plotter
 from visualize import ScatterSketch
-from visualize import SmoothSketch
-from visualize import HistogramSketch
-from visualize import VerticalLineSketch
-from visualize import HorizontalLineSketch
 
 import config as g
 
-def gen_plot():
-  plotter.set_title(g.main_graph_title)
+def init_globals():
+  g.randomizer = Randomizer()
+  g.debug = Debugger() 
+  g.console = Console()
+  g.analyzer = Analyzer()
+  g.modeller = Modeller(g.analyzer)
+  g.gui = GUI(plotter, g.analyzer, g.modeller)
+  g.output_file_formatter = OutputFileFormatter()
 
-  x = g.randomizer.random_list(25, 0, 100)
-  y = g.randomizer.random_list(25, 0, 100)
+def gen_plot():
+  plotter.set_title(g.graph_titles['main'])
+
+  g.x = g.randomizer.random_list(25, 0, 100)
+  g.y = g.randomizer.random_list(25, 0, 100)
 
   # plotter.add_x_val(x) # [-2, -1, 0, 1, 2]
   # plotter.add_y_val(y) # [4,1,0,1,4]
 
   scatter = ScatterSketch()
-  scatter.add_x(x)
-  scatter.add_y(y)
+  scatter.add_x(g.x)
+  scatter.add_y(g.y)
   plotter.load(scatter)
 
   plotter.save()
   plotter.close()
 
-  modeller.gen_least_squares(x,y)
-  analyzer.f_dist(LinearModel, plotter.save, 100)
+  # g.modeller.gen_least_squares(x,y)
+  # g.analyzer.f_dist(LinearModel, 100)
 
-  image_manager.scale('imgs/p.png', 'imgs/p.png', 250)
+  image_manager.scale(g.files['plot'], g.files['plot'], g.image_height)
 
-g.randomizer = Randomizer()
 plotter = Plotter()
+init_globals()
+g.output_file_formatter.format_folder('imgs')
 image_manager = ImageManager()
-analyzer = Analyzer()
-modeller = Modeller(analyzer)
-gui = GUI(plotter, analyzer, modeller)
 
 gen_plot()
 
 #sg.theme('Dark Red 5')
 
-gui.text('MatPlotLib Figure')
-gui.next()
-gui.image('imgs/p.png')
-gui.next()
-gui.text('Show: ')
-gui.input('Show')
-gui.next()
-gui.button('Exit')
-gui.button('Submit')
+g.gui.set_title(g.gui_title)
+g.gui.text('MatPlotLib Figure')
+g.gui.next()
+g.gui.image(g.files['plot'])
+g.gui.next()
+g.gui.text('Show: ')
+g.gui.input('Show')
+g.gui.next()
+g.gui.button('Exit')
+g.gui.button('Submit')
 
-gui.compile()
-gui.loop()
-gui.close()
+g.gui.compile()
+g.gui.loop()
+g.gui.close()

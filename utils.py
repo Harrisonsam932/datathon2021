@@ -1,6 +1,7 @@
 import math
 import random
 import config as g
+import os
 from PIL import Image
 
 class Randomizer(object):
@@ -52,3 +53,21 @@ class ImageManager(object):
         img = img.resize((wsize, baseheight), Image.ANTIALIAS)
         img.save(file_out)
         self.debug.prn(self, f'{file_in} scaled by {baseheight} to {file_out}.')
+
+class OutputFileFormatter(object):
+  def __init__(self):
+    g.debug.prn(self, 'OutputFileFormatter object created.')
+  def class_name(self):
+    return 'OutputFileFormatter'
+  def format_file(self, filepath):
+    if os.path.exists(filepath):
+      os.remove(filepath)
+    else:
+      g.debug.prn(self, f'Could not locate file {filepath}.', 1)
+  def format_folder(self, folder):
+    if os.path.exists(folder):
+      for file in os.listdir(folder):
+        self.format_file(f'{folder}/{file}')
+      g.debug.prn(self, f'Folder {folder} formatted.')
+    else:
+      g.debug.prn(self, f'Folder {folder} does not exist.', 1)

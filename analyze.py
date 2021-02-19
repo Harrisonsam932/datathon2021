@@ -42,7 +42,7 @@ class Analyzer(object):
     f = model.get_f()
     var_mean = self.get_variance(zip(x, y), f_mean)
     var_fit = self.get_variance(zip(x, y), f)
-    self.debug.prn(self, 'R squared calculated.')
+    g.debug.prn(self, 'R squared calculated.')
     return (var_mean - var_fit) / var_mean
   def plot_roc(self):
     plotter = Plotter()
@@ -71,7 +71,7 @@ class Analyzer(object):
     slope = (n * sum_xy - sum_x * sum_y) / (n * sum_x_sq - (sum_x ** 2))
     yint = y_av - slope * x_av
     return slope, yint
-  def f_dist(self, model_type, plotter_func, trials):
+  def f_dist(self, model_type, trials):
     plotter = Plotter()
     image_manager = ImageManager()
 
@@ -88,7 +88,7 @@ class Analyzer(object):
         slope, yint = self.least_squares_slope_yint_eqn(x_vals, y_vals)
         func = lambda x : slope * x + yint 
       else:
-        self.debug.prn(self, 'Incompatible model type.', 1)
+        g.debug.prn(self, 'Incompatible model type.', 1)
         break
 
       ss_fit = self.get_ss_res(zip(x_vals, y_vals), func)
@@ -113,8 +113,9 @@ class Analyzer(object):
     self.debug.prn(self, 'F distribution created.')
   
 class Dataset(object):
-  def __init__(self):
+  def __init__(self, num_of_inputs):
     self.debug = Debugger()
+    self.n = num_of_inputs
   def class_name(self):
     return "Dataset"
   def get_output(self):
@@ -123,8 +124,22 @@ class Dataset(object):
     pass # returns list of list of inputs (2D)
   def get_vars(self):
     pass # returns list of tuples (x1,x2,...,xn,y)
+  def add_entry(self):
+    pass
+  def add_output(self):
+    pass # want to add a value to the dataset
+  def add_input(self, value, index):
+    pass
 
 '''
+
+(x1,x2,x3,y)
+y=ax1+bx2+c
+y = f(x1,x2,x3)
+
+get_vars = [(3, 57, True, True), (0, 18, False, True)]
+set_vars([3, 57, True, True])
+
 
 [(x1,y1),(x2,y2),(x3,y3)...]
 y=ax+bz+c

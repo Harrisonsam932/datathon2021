@@ -15,7 +15,7 @@ class Plotter(object):
     self._set_axes()
     self._set_labels()
     self.sketches = []
-    self.filename = 'imgs/p.png'
+    self.filename = g.files['plot']
     self.debug.prn(self, 'Plotter object created.')
   def class_name(self):
     return 'Plotter'

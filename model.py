@@ -11,7 +11,7 @@ from visualize import VerticalLineSketch
 from visualize import HorizontalLineSketch
 
 import math
-import numpy as np
+import config as g
 
 class Modeller(object):
   def __init__(self, analyzer):
@@ -69,7 +69,7 @@ class LinearModel(Model):
     plotter = Plotter()
     image_manager = ImageManager()
     sketches = []
-    plotter.set_output_filename(f'imgs/ls-{self.index}.png')
+    plotter.set_output_filename(g.files['least-squares'])
     plotter.set_title('Least Squares')
 
     # min_x = min(self.training.get_output()[x_index])
@@ -105,7 +105,7 @@ class LinearModel(Model):
     plotter.save()
     plotter.close()
 
-    image_manager.scale(f'imgs/ls-{self.index}.png', f'imgs/ls-{self.index}.png', 250)
+    image_manager.scale(g.files['least-squares'], g.files['least-squares'], 250)
 
     del plotter
     del image_manager
