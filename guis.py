@@ -237,7 +237,8 @@ class SelectPopUp(PopUp):
   def show(self):
     self.layout = [
       [sg.Text(self.text)],
-      [sg.Listbox(values=g.stats_to_codes.keys(), key='Peek', size=(30,6))],
+      [sg.Input(do_not_clear=True, enable_events=True, )]
+      [sg.Listbox(values=g.stats_to_codes.keys(), key='Peek', size=(30,6), enable_events=True)],
       [sg.Button('Submit')]
     ]
     self.window = sg.Window(self.title, self.layout)

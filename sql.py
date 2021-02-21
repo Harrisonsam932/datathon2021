@@ -1,9 +1,30 @@
 import sqlite3 as sql
 from utils import Debugger
 
-class SQLManager(object): # Russell, you can put your sql methods here
-  def __init__(self):
-    pass
+class FieldManager(object):
+  def __init__(self, conn, db_name, dictionary):
+    self.conn = conn
+    self.db_name = db_name
+    # Dictionary is generated if none is specified
+    if dictionary == None:
+      dictionary = {}
+    else:
+      self.dictionary = dictionary
+  # Adds specified field from specified db to a list
+  # Adds this list to the dictionary 
+  # dict is optional, if no dict is provided one will be generated
+  def add_field_list(self, field, param):
+    # Predefined querie
+    q = f'SELECT {field} FROM {self.db_name} {param}'
+    # Lists for field values
+    obj_list = []
+    # Get data from specified fields
+    for r in self.conn.query(q):
+      obj_list.append(r)
+    # Place generated list into dictionary
+    self.dictionary[f'{field}'] = obj_list
+    # return lists
+    return self.dictionary
 
 class SQLConnection(object):
   def __init__(self, addr):

@@ -30,29 +30,3 @@ def csv_to_db(db_name):
     print(r)
 
 
-# Adds specified field from specified db to a list
-# Adds this list to the dictionary 
-# dict is optional, if no dict is provided one will be generated
-def generate_xy_lists(dictionary, db_name, field, param):
-  # Dictionary is generated if none is specified
-  if dictionary == None:
-    dictionary = {}
-
-  # Predefined querie
-  q = f'SELECT {field} FROM {db_name} {param}'
-
-  # Lists for holding x and y values
-  obj_list = []
-
-  # Connect to database
-  conn = SQLConnection(f'data/{db_name}.db')
-  
-  # Get data from specified fields
-  for r in conn.query(q):
-    obj_list.append(r)
-
-  # Place generated list into dictionary
-  dictionary[f'{field}'] = obj_list
-
-  # return lists
-  return dictionary
