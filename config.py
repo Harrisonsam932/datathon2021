@@ -1,7 +1,7 @@
 x = []
 y = []
 sketch_sets = {}
-debug_level = 2
+debug_level = 1
 x_clr = 'k'
 y_clr = 'k'
 x_lbl = 'X'
@@ -21,6 +21,7 @@ modeller = None
 gui = None
 image_height = 250
 gui_title = 'Shell UI'
+interactive_mode = False
 graph_titles = {
   'main': 'Main Graph',
 }
@@ -28,4 +29,8 @@ files = {
   'plot': 'imgs/p.png',
   'least-squares': 'imgs/ls.png',
   'f-dist': 'imgs/f.png',
+}
+stats_to_codes = {
+  'Least Squares Slope': 'ls-a',
+  'Least Squares Y-Intercept': 'ls-b'
 }

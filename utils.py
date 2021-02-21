@@ -13,10 +13,6 @@ class Randomizer(object):
       data.append(random.randint(lower, upper))
     return data
 
-class Globals(object):
-  def __init__(self):
-    pass
-
 class Math(object):
     def __init__(self):
         pass

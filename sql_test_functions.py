@@ -5,49 +5,54 @@ from sql import SQLConnection
 
 # dbName = 'global_sea_levels_nosignals'
 # Converts a csv to a db file and prints the db as an output
-def csv_to_db(dbName):
+def csv_to_db(db_name):
   
   # Create db object
-  db = open(f'data/{dbName}.db', 'w')
+  db = open(f'data/{db_name}.db', 'w')
   # Close file
   db.close()
 
   # Connect to created database
-  conn = SQLConnection(f'data/{dbName}.db')
+  conn = SQLConnection(f'data/{db_name}.db')
 
   # Get data from CSV using pandas
-  sea_level_data = pd.read_csv(f'data/{dbName}.csv')
+  sea_level_data = pd.read_csv(f'data/{db_name}.csv')
 
   # if_exists can be 'replace', 'append' or 'error' and defines behaviour when chosen table name already exists
   # conn defines the db this table is being added to
-  sea_level_data.to_sql(dbName, conn, if_exists = 'replace', index = False)
+  sea_level_data.to_sql(db_name, conn, if_exists = 'replace', index = False)
 
   # Define a queue
-  q = f'SELECT * FROM {dbName}'
+  q = f'SELECT * FROM {db_name}'
 
   # Iterate through connection printing each row
   for r in conn.queue(q):
     print(r)
 
-# Takes name and two fields of database and returns two lists containing the data from those fields
-# param is optional and defines a parameter for grabbing data, leave blank string if not using
-def generate_xy_lists(dbName, field1, field2, param):
-  # Predefined queries
-  q1 = f'SELECT {field1} FROM {dbName} {param}'
-  q2 = f'SELECT {field2} FROM {dbName} {param}'
-  
+
+# Adds specified field from specified db to a list
+# Adds this list to the dictionary 
+# dict is optional, if no dict is provided one will be generated
+def generate_xy_lists(dictionary, db_name, field, param):
+  # Dictionary is generated if none is specified
+  if dictionary == None:
+    dictionary = {}
+
+  # Predefined querie
+  q = f'SELECT {field} FROM {db_name} {param}'
+
   # Lists for holding x and y values
-  x_list = []
-  y_list = []
-  
+  obj_list = []
+
   # Connect to database
-  conn = SQLConnection(f'data/{dbName}.db')
+  conn = SQLConnection(f'data/{db_name}.db')
   
   # Get data from specified fields
-  for r in conn.query(q1):
-    x_list.append(r)
-  for r in conn.query(q2):
-    x_list.append(r)
+  for r in conn.query(q):
+    obj_list.append(r)
+
+  # Place generated list into dictionary
+  dictionary[f'{field}'] = obj_list
 
   # return lists
-  return x_list, y_list
+  return dictionary

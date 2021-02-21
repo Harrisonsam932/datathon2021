@@ -1,5 +1,4 @@
 import PySimpleGUI as sg
-from utils import Debugger
 from model import LinearModel
 import os
 import config as g
@@ -31,30 +30,42 @@ class GUI(object):
     self.layout = [[]]
     self.row = 0
     self.theme = None
-    self.debug = Debugger()
-    self.debug.prn(self, 'GUI object created.')
+    g.debug.prn(self, 'GUI object created.')
     self.submit_func = None
-    self.plot_shown = 'plot.png'
+    self.plot_shown = 'imgs/p.png'
     self.plotter = plotter
     self.analyzer = analyzer
     self.modeller = modeller
   def class_name(self):
     return 'GUI'
   def standard(self):
-    self.text('MatPlotLib Figure')
-    self.next()
-    self.image(self.plot_shown)
-    self.next()
-    self.text('Show: ')
-    self.input('Show')
-    self.next()
-    self.button('Exit')
-    self.button('Submit')
+    if g.interactive_mode:
+      self.set_title(g.gui_title)
+      self.text('Interactive Mode')
+      self.next()
+      self.image(self.plot_shown)
+      self.next()
+      self.button('Display')
+      self.button('Peek')
+      self.next()
+      self.button('Exit Program')
+      self.button('Exit Interactive Mode')
+    else:
+      self.set_title(g.gui_title)
+      self.text('Standard Mode')
+      self.next()
+      self.image(self.plot_shown)
+      self.next()
+      self.text('Show: ')
+      self.input('Show')
+      self.next()
+      self.button('Exit')
+      self.button('Submit')
   def compile(self):
     if not self.is_compiled:
       self.window = sg.Window(self.title, self.layout)
       self.is_compiled = True
-      self.debug.prn(self, 'Compiled data.')
+      g.debug.prn(self, 'Compiled data.')
   def set_theme(self, theme):
     sg.theme(theme)
     self.is_compiled = False
@@ -62,49 +73,68 @@ class GUI(object):
     self.layout.append([])
     self.row += 1
     self.is_compiled = False
-    self.debug.prn(self, f'Added row {self.row}.')
+    g.debug.prn(self, f'Added row {self.row}.')
   def text(self, text):
     self.layout[self.row].append(sg.Text(text))
     self.is_compiled = False
-    self.debug.prn(self, f'Added text to row {self.row}.')
+    g.debug.prn(self, f'Added text to row {self.row}.')
   def input(self, key):
     self.layout[self.row].append(sg.InputText('', key=key))
     self.is_compiled = False
-    self.debug.prn(self, f'Added input box to row {self.row}.')
+    g.debug.prn(self, f'Added input box to row {self.row}.')
   def button(self, key):
     self.layout[self.row].append(sg.Button(key))
     self.is_compiled = False
-    self.debug.prn(self, f'Added button to row {self.row}.')
+    g.debug.prn(self, f'Added button to row {self.row}.')
   def image(self, addr):
     self.layout[self.row].append(sg.Image(addr))
     self.is_compiled = False
-    self.debug.prn(self, f'Added image to row {self.row}.')
+    g.debug.prn(self, f'Added image to row {self.row}.')
+  def file_browser(self, init_folder, key):
+    self.layout[self.row].append(sg.FileBrowse(initial_folder=init_folder, key=key))
+    self.is_compiled = False
+    g.debug.prn(self, f'Added file browser to {self.row}.')
   def set_title(self, title):
     self.title = title
     self.is_compiled = False
-    self.debug.prn(self, 'Set title.')
+    g.debug.prn(self, 'Set title.')
   def loop(self):
     if self.is_compiled:
       while True:
         event, values = self.window.read()
-        if event == sg.WIN_CLOSED or event == 'Exit':
-          self.debug.prn(self, 'Exit triggered.')
+        if event == sg.WIN_CLOSED or event == 'Exit' or event == 'Exit Program':
+          g.debug.prn(self, 'Exit triggered.')
           break
-        if event == 'Submit':
+        elif event == 'Submit':
           for command in values['Show'].split('|'):
             g.console.read(command)
+        if g.interactive_mode:
+          if event == 'Exit Interactive Mode':
+            g.console.read(':')
+          elif event == 'Display':
+            image_browser = FileBrowserPopUp('Image Selector')
+            image_browser.set_text('Find file below:')
+            image_browser.show()
+            image_browser.loop()
+            image_browser.close()
+          elif event == 'Peek':
+            peek_stats = SelectPopUp('Peek Statistics')
+            peek_stats.set_text('Select image from below:')
+            peek_stats.show()
+            peek_stats.loop()
+            peek_stats.close()
     else:
-      self.debug.prn(self, 'GUI not compiled.', 1)
+      g.debug.prn(self, 'GUI not compiled.', 1)
   def clear(self):
     self.is_compiled = False
     self.title = None
     self.layout = [[]]
     self.row = 0
     self.theme = None
-    self.debug.prn(self, 'GUI cleared.')
+    g.debug.prn(self, 'GUI cleared.')
   def close(self):
     self.window.close()
-    self.debug.prn(self, 'GUI closed.')
+    g.debug.prn(self, 'GUI closed.')
 
 class PopUp(object):
   def __init__(self, title):
@@ -135,6 +165,7 @@ class YesNoPopUp(PopUp):
       [sg.Text(self.text)],
       [sg.Button('Yes'), sg.button('No')]
     ]
+    self.window = sg.Window(self.title, self.layout)
     g.debug.prn(self, 'Message shown.')
   def loop(self):
     g.debug.prn(self, 'Loop commenced.')
@@ -169,6 +200,65 @@ class InfoPopUp(PopUp):
           self.close()
           break
 
+class FileBrowserPopUp(PopUp):
+  def __init__(self, title):
+    super().__init__(title)
+  def class_name(self):
+    return 'FileBrowserPopUp'
+  def show(self):
+    self.layout = [
+      [sg.Text(self.text)],
+      [sg.FileBrowse(initial_folder='imgs/', key='Image Browse')],
+      [sg.Button('Submit')]
+    ]
+    self.window = sg.Window(self.title, self.layout)
+    g.debug.prn(self, 'Message shown.')
+  def loop(self):
+    g.debug.prn(self, 'Loop commenced.')
+    while True:
+      event, values = self.window.read()
+      if event == sg.WIN_CLOSED:
+        self.close()
+        break
+      elif event == 'Submit':
+        if not values['Image Browse'] == None:
+          file = values['Image Browse'].split('/')[-1][:-4]
+          self.close()
+          g.console.read(f'i:{file}')
+          break
+        else:
+          g.debug.prn(self, 'No file selected.', 1)
+
+class SelectPopUp(PopUp):
+  def __init__(self, title):
+    super().__init__(title)
+  def class_name(self):
+    return 'SelectPopUp'
+  def show(self):
+    self.layout = [
+      [sg.Text(self.text)],
+      [sg.Listbox(values=g.stats_to_codes.keys(), key='Peek', size=(30,6))],
+      [sg.Button('Submit')]
+    ]
+    self.window = sg.Window(self.title, self.layout)
+    g.debug.prn(self, 'Message shown.')
+  def loop(self):
+    g.debug.prn(self, 'Loop commenced.')
+    while True:
+      event, values = self.window.read()
+      if event == sg.WIN_CLOSED:
+        self.close()
+        break
+      elif event == 'Submit':
+        if not values['Peek'] == None:
+          #self.close()
+          print(values['Peek'])
+          code = g.stats_to_codes[values['Peek']]
+          g.console.read(f'v:{code}')
+          break
+        else:
+          g.debug.prn(self, 'No statistic selected.', 1)
+
 class Console(object):
   def __init__(self):
     pass
@@ -181,7 +271,16 @@ class Console(object):
     if command.count(':') == 1:
       header = command.split(':')[0]
       body = command.split(':')[1]
-      if header == 'i':
+      if header == '' and body == '':
+        g.interactive_mode = not g.interactive_mode
+        g.debug.prn(self, f'Interactive mode set to {g.interactive_mode}.')
+        g.gui.close()
+        g.gui.clear()
+        g.gui.standard()
+        g.gui.compile()
+        g.gui.loop()
+        g.gui.close()
+      elif header == 'i':
         if os.path.exists(f'imgs/{body}.png'):
           g.debug.prn(self, 'Updating visible file.')
           g.gui.close()
@@ -200,11 +299,15 @@ class Console(object):
         elif body == 'ls':
           g.modeller.gen_least_squares(g.x,g.y)
           g.debug.prn(self, 'Generated least squares model.')
+        else:
+          g.debug.prn(self, 'File to generate not recognized.')
+          return
+        
       elif header == 'v':
         text = ''
-        if body == 'ls-a' or body == 'ls-slope':
+        if body == 'ls-a':
           text = f'slope = {g.modeller.linear(0).get_slope()}'
-        elif body == 'ls-b' or body == 'ls-yint':
+        elif body == 'ls-b':
           text = f'yint = {g.modeller.linear(0).get_yint()}'
         elif body == 'specif':
           text = f'specificity = {g.analyzer.get_specificity()}'
